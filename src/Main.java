@@ -1,14 +1,16 @@
-import java.util.Arrays;
-
 public class Main {
     public static void main(String[] args) {
-        String hex = "97f92a75b3faf8939e8e98b96476fd22";
+        String hex1 = "24dca";
+        String hex2 = "512acdc";
         LargeNumber numberA = new LargeNumber();
-        numberA.setHex(hex);
-        System.out.println(numberA.getHex());
-        System.out.println(Arrays.toString(numberA.getLargeDecValue()));
-        System.out.println(numberA.convertArrayToDecimal());
+        numberA.setHex(hex1);
+        LargeNumber numberB = new LargeNumber();
+        numberB.setHex(hex2);
+        String xorResult = new LargeNumber().XOR(numberA,numberB);
+        String orResult = new LargeNumber().OR(numberA,numberB);
+        System.out.println(xorResult);
+        System.out.println(orResult);
+
         Tests tests = new Tests();
-        tests.testConvert(hex);
     }
 }
