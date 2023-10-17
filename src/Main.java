@@ -1,7 +1,7 @@
 public class Main {
     public static void main(String[] args) {
-        String hex1 = "13";
-        String hex2 = "2033E";
+        String hex1 = "420ae";
+        String hex2 = "2420";
 
         LargeNumber numberA = new LargeNumber();
         numberA.setHex(hex1);
@@ -21,6 +21,10 @@ public class Main {
         System.out.println(new LargeNumber().shiftR(numberA,3));
         System.out.println("======================");
         System.out.println(new LargeNumber().shiftL(numberA,1));
+        System.out.println("======================");
+        System.out.println(new LargeNumber().ADD(numberA,numberB));
+        System.out.println("======================");
+        System.out.println(new LargeNumber().SUB(numberA,numberB));
         System.out.println("======================");
 
 

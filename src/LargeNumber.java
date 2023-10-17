@@ -2,16 +2,10 @@ import java.util.Arrays;
 import java.util.function.IntBinaryOperator;
 
 public class LargeNumber {
-
-    private int[] largeValue;
+    // not used
+   // private int[] largeValue;
     private int[] hexInBinary;
     private String hexValue;
-    private int bits;
-
-    public LargeNumber() {
-        bits = 8;
-    }
-
     public int[] getHexInBinary() {
         return hexInBinary;
     }
@@ -21,8 +15,8 @@ public class LargeNumber {
             throw new IllegalArgumentException("Invalid input");
         }
         this.hexValue = largeNumber;
-        this.bits = 32;
-        largeValue = hexStringToIntArray(largeNumber);
+        // not used
+        //largeValue = hexStringToIntArray(largeNumber);
         hexInBinary = hexToBinaryArray(largeNumber);
     }
     public String getHex(){
@@ -100,9 +94,6 @@ public class LargeNumber {
         System.out.println(Arrays.toString(result));
         return binaryArrayToHex(result);
     }
-    public int[] getLargeValue(){
-        return this.largeValue;
-    }
 
     private String performBitwiseOperation(LargeNumber numberA, LargeNumber numberB, IntBinaryOperator operation) {
         if (!isValid(numberA) || !isValid(numberB)) {
@@ -126,29 +117,85 @@ public class LargeNumber {
 
         return result;
     }
+    public String ADD (LargeNumber numberA, LargeNumber numberB){
+        if(!isValid(numberA) || !isValid(numberB)){
+            throw new IllegalArgumentException("Invalid Input");
+        }
+        int[] result = addBinaryArrays(numberA.getHexInBinary(),numberB.getHexInBinary());
+        return binaryArrayToHex(result);
+    }
+    public String SUB (LargeNumber numberA,LargeNumber numberB) {
+        if(!isValid(numberA) || !isValid(numberB)){
+            throw new IllegalArgumentException("Invalid Input");
+        }
+        int[] result = subtractBinaryArrays(numberA.getHexInBinary(), numberB.getHexInBinary());
+        return binaryArrayToHex(result);
+    }
+    private int[] addBinaryArrays(int[] binaryA, int[] binaryB) {
+        int[] result = new int[Math.max(binaryA.length, binaryB.length)];
+        int carry = 0;
+        for (int i = 0; i < result.length; i++) {
+            int sum = (i < binaryA.length ? binaryA[i] : 0) + (i < binaryB.length ? binaryB[i] : 0) + carry;
+            result[i] = sum % 2;
+            carry = sum / 2;
+        }
 
-    private int[] hexStringToIntArray(String hexString){
-        hexString = hexString.replaceAll("^0x|0X","");
-        if(!isHex(hexString)){
-            throw new IllegalArgumentException("Invalid hexadecimal number");
+        if (carry > 0) {
+            int[] expandedResult = new int[result.length + 1];
+            System.arraycopy(result, 0, expandedResult, 0, result.length);
+            expandedResult[result.length] = carry;
+            result = expandedResult;
         }
-        String[] hexPair = hexString.split("(?<=\\G.{2})");
-        int[] result = new int[hexPair.length];
-        for(int i = 0; i< hexPair.length;i++){
-            result[i] = Integer.parseInt(hexPair[i],16);
+
+        return result;
+    }
+    private int[] subtractBinaryArrays(int[] binaryA, int[] binaryB) {
+        isBigger(binaryA,binaryB);
+        int[] result = new int[Math.max(binaryA.length, binaryB.length)];
+        int borrow = 0;
+        for (int i = 0; i < result.length; i++) {
+            int diff = (i < binaryA.length ? binaryA[i] : 0) - (i < binaryB.length ? binaryB[i] : 0) - borrow;
+            if (diff < 0) {
+                diff += 2;
+                borrow = 1;
+            } else {
+                borrow = 0;
+            }
+            result[i] = diff;
         }
+
+        while (result.length > 1 && result[0] == 0) {
+            int[] reducedResult = new int[result.length - 1];
+            System.arraycopy(result, 1, reducedResult, 0, result.length - 1);
+            result = reducedResult;
+        }
+
         return result;
     }
 
+    //  /** One of additional methods **//
+//    private int[] hexStringToIntArray(String hexString){
+//        hexString = hexString.replaceAll("^0x|0X","");
+//        if(!isHex(hexString)){
+//            throw new IllegalArgumentException("Invalid hexadecimal number");
+//        }
+//        String[] hexPair = hexString.split("(?<=\\G.{2})");
+//        int[] result = new int[hexPair.length];
+//        for(int i = 0; i< hexPair.length;i++){
+//            result[i] = Integer.parseInt(hexPair[i],16);
+//        }
+//        return result;
+//    }
+//
 
-    private String intArrayToHexString(int[] intArray) {
-        StringBuilder sb = new StringBuilder();
-        for (int num : intArray) {
-            sb.append(String.format("%02x", num));
-        }
-
-        return sb.toString();
-    }
+//    private String intArrayToHexString(int[] intArray) {
+//        StringBuilder sb = new StringBuilder();
+//        for (int num : intArray) {
+//            sb.append(String.format("%02x", num));
+//        }
+//
+//        return sb.toString();
+//    }
 
     private int[] hexToBinaryArray(String hexNumber) {
         int[] binaryArray = new int[hexNumber.length() * 4];
@@ -179,5 +226,10 @@ public class LargeNumber {
     }
     private boolean isHex(String hexValue){
         return hexValue.matches("[0-9A-Fa-f]+");
+    }
+    private void isBigger(int[] numberA, int[] numberB){
+        if(numberA.length < numberB.length){
+            throw new IllegalArgumentException("First value is less then second one");
+        }
     }
 }
