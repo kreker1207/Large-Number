@@ -121,23 +121,26 @@ public class LargeNumber {
         if(!isValid(numberA) || !isValid(numberB)){
             throw new IllegalArgumentException("Invalid Input");
         }
-        int[] result = addBinaryArrays(numberA.getHexInBinary(),numberB.getHexInBinary());
+        int[] result = addBinaryArrays(numberA.getHexInBinary(),numberB.getHexInBinary(), 8);
         return binaryArrayToHex(result);
     }
     public String SUB (LargeNumber numberA,LargeNumber numberB) {
         if(!isValid(numberA) || !isValid(numberB)){
             throw new IllegalArgumentException("Invalid Input");
         }
-        int[] result = subtractBinaryArrays(numberA.getHexInBinary(), numberB.getHexInBinary());
+        int[] result = subtractBinaryArrays(numberA.getHexInBinary(), numberB.getHexInBinary(), 8);
         return binaryArrayToHex(result);
     }
-    private int[] addBinaryArrays(int[] binaryA, int[] binaryB) {
+    private int[] addBinaryArrays(int[] binaryA, int[] binaryB, int blocksize) {
         int[] result = new int[Math.max(binaryA.length, binaryB.length)];
         int carry = 0;
         for (int i = 0; i < result.length; i++) {
-            int sum = (i < binaryA.length ? binaryA[i] : 0) + (i < binaryB.length ? binaryB[i] : 0) + carry;
-            result[i] = sum % 2;
-            carry = sum / 2;
+            int block1 = (i < binaryA.length)? binaryA[i]:0;
+            int block2 = (i < binaryB.length)? binaryB[i]:0;
+
+            int sum =  block1 + block2 + carry;
+            result[i] = sum % (1 << blocksize);
+            carry = sum / (1 << blocksize);
         }
 
         if (carry > 0) {
@@ -149,14 +152,17 @@ public class LargeNumber {
 
         return result;
     }
-    private int[] subtractBinaryArrays(int[] binaryA, int[] binaryB) {
+    private int[] subtractBinaryArrays(int[] binaryA, int[] binaryB, int blocksize) {
         isBigger(binaryA,binaryB);
-        int[] result = new int[Math.max(binaryA.length, binaryB.length)];
+        int[] result = new int[binaryA.length];
         int borrow = 0;
         for (int i = 0; i < result.length; i++) {
-            int diff = (i < binaryA.length ? binaryA[i] : 0) - (i < binaryB.length ? binaryB[i] : 0) - borrow;
+            int block1 = binaryA[i];
+            int block2 = (i < binaryB.length) ? binaryB[i] : 0;
+
+            int diff = block1 - block2 - borrow;
             if (diff < 0) {
-                diff += 2;
+                diff += 1 << blocksize;
                 borrow = 1;
             } else {
                 borrow = 0;
@@ -164,10 +170,15 @@ public class LargeNumber {
             result[i] = diff;
         }
 
-        while (result.length > 1 && result[0] == 0) {
-            int[] reducedResult = new int[result.length - 1];
-            System.arraycopy(result, 1, reducedResult, 0, result.length - 1);
-            result = reducedResult;
+        if (borrow > 0) {
+            int i = result.length - 1;
+            while (i >= 0 && result[i] == 0) {
+                result[i] = (1 << blocksize) - 1;
+                i--;
+            }
+            if (i >= 0) {
+                result[i]--;
+            }
         }
 
         return result;

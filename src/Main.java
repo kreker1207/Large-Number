@@ -1,7 +1,7 @@
 public class Main {
     public static void main(String[] args) {
-        String hex1 = "420ae";
-        String hex2 = "2420";
+        String hex1 = "32DD2";
+        String hex2 = "207cd";
 
         LargeNumber numberA = new LargeNumber();
         numberA.setHex(hex1);
