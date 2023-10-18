@@ -10,7 +10,7 @@ public class Main {
                 "ae409f7beb52a8d95c3e413f670884e4ab004d878072ad758b3e280219b8f15b",
                 "a37ec108295aae4d47837d8131eef636a9ff64f0ff1aa514e983affbcc8e1d4",
                 "146fd821052b55c9a8f06fb0263ddec6d53fec9e1fe354a29d3075ff7991c3a903",
-                "i dont know but its wrong",
+                "i dont know, might be correct",
                 "i dont know but its wrong",
                 "i dont know but its wrong"
         };
@@ -25,7 +25,7 @@ public class Main {
                 "dd169d6ae34932d31d8654f1df6a7da3ebe2b710c3562540dac1c789f4a801fc",
                 "45d2c52a396d9a59c4f3561c412b04b8283a91de7953b57e4a7c70ec16affc0",
                 "8ba58a5472db34b389e6ac3882560970507523bcf2a76afc94f8e1d82d5ff803",
-                "i dont know but its wrong",
+                "i dont know, might be correct",
                 "i dont know but its wrong",
                 "i dont know but its wrong"
         };
@@ -35,6 +35,7 @@ public class Main {
         String[] results2 = new String[]{
                 "34ff6","34ffe","8","df883","40ef","81df0", "35006","BEF2","C072"
         };
+
         Tests.testOperation("Test3",hex5,hex6,results2);
     }
 }

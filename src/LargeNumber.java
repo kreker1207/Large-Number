@@ -99,12 +99,64 @@ public class LargeNumber {
 
         return result;
     }
-    public String ADD (LargeNumber numberA, LargeNumber numberB){
-        if(!isValid(numberA) || !isValid(numberB)){
+
+    public String ADD(LargeNumber number1, LargeNumber number2) {
+        if (!isValid(number1) || !isValid(number2)) {
             throw new IllegalArgumentException("Invalid Input");
         }
-        int[] result = addBinaryArrays(numberA.getHexInBinary(),numberB.getHexInBinary(), 8);
-        return binaryArrayToHex(result);
+
+        String binaryNumber1 = numberToBinaryString(number1.getHexInBinary());
+        String binaryNumber2 = numberToBinaryString(number2.getHexInBinary());
+
+        String resultBinary = addBinaryStrings(binaryNumber1, binaryNumber2);
+        return binaryArrayToHex(binaryStringToBinaryArray(resultBinary));
+    }
+    private int[] binaryStringToBinaryArray(String binaryString) {
+        int[] binaryArray = new int[binaryString.length()];
+        for (int i = 0; i < binaryArray.length; i++) {
+            binaryArray[i] = binaryString.charAt(i) - '0';
+        }
+        return binaryArray;
+    }
+    public String addBinaryStrings(String x, String y)
+    {
+        int i = x.length() - 1, j = y.length() - 1;
+        int carry = 0;
+        StringBuilder result = new StringBuilder();
+        while (i >= 0 || j >= 0) {
+            int sum = carry;
+            if (i >= 0) {
+                sum += x.charAt(i) - '0';
+            }
+            if (j >= 0) {
+                sum += y.charAt(j) - '0';
+            }
+            if (sum == 0 || sum == 1) {
+                result.append(sum);
+                carry = 0;
+            }
+            else if (sum == 2) {
+                result.append("0");
+                carry = 1;
+            }
+            else {
+                result.append("1");
+                carry = 1;
+            }
+            i--;
+            j--;
+        }
+        if (carry == 1) {
+            result.append("1");
+        }
+        return result.reverse().toString();
+    }
+    private String numberToBinaryString(int[] numberArray) {
+        StringBuilder binaryStringBuilder = new StringBuilder(numberArray.length);
+        for (int bit : numberArray) {
+            binaryStringBuilder.append(bit);
+        }
+        return binaryStringBuilder.toString();
     }
     public String SUB (LargeNumber numberA,LargeNumber numberB) {
         if(!isValid(numberA) || !isValid(numberB)){
@@ -134,27 +186,7 @@ public class LargeNumber {
         int[] finalResult = Arrays.copyOfRange(result, firstNonZero, result.length);
         return binaryArrayToHex(finalResult);
     }
-    private int[] addBinaryArrays(int[] binaryA, int[] binaryB, int blocksize) {
-        int[] result = new int[Math.max(binaryA.length, binaryB.length)];
-        int carry = 0;
-        for (int i = 0; i < result.length; i++) {
-            int block1 = (i < binaryA.length)? binaryA[i]:0;
-            int block2 = (i < binaryB.length)? binaryB[i]:0;
 
-            int sum =  block1 + block2 + carry;
-            result[i] = sum % (1 << blocksize);
-            carry = sum / (1 << blocksize);
-        }
-
-        if (carry > 0) {
-            int[] expandedResult = new int[result.length + 1];
-            System.arraycopy(result, 0, expandedResult, 0, result.length);
-            expandedResult[result.length] = carry;
-            result = expandedResult;
-        }
-
-        return result;
-    }
     private int[] subtractBinaryArrays(int[] binaryA, int[] binaryB, int blocksize) {
         isBigger(binaryA,binaryB);
         int[] result = new int[binaryA.length];
