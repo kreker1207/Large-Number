@@ -45,53 +45,35 @@ public class LargeNumber {
         return binaryArrayToHex(result);
     }
     public String shiftR(LargeNumber numberA, int n){
-        if(!isValid(numberA)){
+        if (!isValid(numberA)) {
             throw new IllegalArgumentException("Your number is not valid");
         }
-        if(n<0){throw new IllegalArgumentException("You can not shift to negative number of bits");}
-
+        if (n < 0) {
+            throw new IllegalArgumentException("You cannot shift by a negative number of bits");
+        }
         int[] shiftNumber = numberA.getHexInBinary();
-        int zeroesBeforeOne = 0;
-        for(;zeroesBeforeOne < shiftNumber.length; zeroesBeforeOne++){
-            if(shiftNumber[zeroesBeforeOne] > 0) {
-                break;
-            }
+        int[] result = new int[shiftNumber.length];
+        if (shiftNumber.length - n >= 0) {
+            System.arraycopy(shiftNumber, 0, result, n, shiftNumber.length - n);
         }
-        if(shiftNumber.length - n - zeroesBeforeOne <= 0){
-            return "0";
+        for (int i = 0; i < n; i++) {
+            result[i] = 0;
         }
-        int[] result = new int[shiftNumber.length -n - zeroesBeforeOne];
-        System.arraycopy(shiftNumber,zeroesBeforeOne,result,0,result.length);
-        System.out.println(Arrays.toString(result));
         return binaryArrayToHex(result);
     }
     public String shiftL(LargeNumber numberA,int n){
-        if(!isValid(numberA)){
+        if (!isValid(numberA)) {
             throw new IllegalArgumentException("Your number is not valid");
         }
-        if(n<0){throw new IllegalArgumentException("You can not shift to negative number of bits");}
-
+        if (n < 0) {
+            throw new IllegalArgumentException("You cannot shift by a negative number of bits");
+        }
         int[] shiftNumber = numberA.getHexInBinary();
-        System.out.println(Arrays.toString(shiftNumber));
-        int zeroesBeforeOne = 0;
-        for(;zeroesBeforeOne < shiftNumber.length; zeroesBeforeOne++){
-            if(shiftNumber[zeroesBeforeOne] > 0) {
-                break;
-            }
+        int[] result = new int[shiftNumber.length + n];
+        for (int i = 0; i < n; i++) {
+            result[i] = 0;
         }
-        int[] trimArray = new int[shiftNumber.length-zeroesBeforeOne];
-        System.arraycopy(shiftNumber,zeroesBeforeOne,trimArray,0,shiftNumber.length-zeroesBeforeOne);
-        System.out.println(Arrays.toString(trimArray));
-        int newLength = trimArray.length + n;
-        if(newLength <= 0){
-            return "0";
-        }
-        int[] result = new int[newLength];
-        for(int i = newLength-n;i<newLength;i++){
-            Arrays.fill(result,i,newLength,0);
-        }
-        System.arraycopy(trimArray,0,result,0,result.length-1);
-        System.out.println(Arrays.toString(result));
+        if(result.length - n >= 0) System.arraycopy(shiftNumber, 0, result, n, result.length - n);
         return binaryArrayToHex(result);
     }
 
@@ -130,6 +112,27 @@ public class LargeNumber {
         }
         int[] result = subtractBinaryArrays(numberA.getHexInBinary(), numberB.getHexInBinary(), 8);
         return binaryArrayToHex(result);
+    }
+    public String MOD (LargeNumber numberA, LargeNumber numberB){
+        int[] dividend  = numberA.getHexInBinary();
+        int[] divisor = numberB.getHexInBinary();
+        int n = divisor.length;
+        int[] result = new int[dividend.length];
+        for (int i = 0; i < dividend.length; i++) {
+            result[i] = dividend[i];
+
+            if (result[i] == 1) {
+                for (int j = 0; j < n && i + j < result.length; j++) {
+                    result[i + j] ^= divisor[j];
+                }
+            }
+        }
+        int firstNonZero = 0;
+        while (firstNonZero < result.length && result[firstNonZero] == 0) {
+            firstNonZero++;
+        }
+        int[] finalResult = Arrays.copyOfRange(result, firstNonZero, result.length);
+        return binaryArrayToHex(finalResult);
     }
     private int[] addBinaryArrays(int[] binaryA, int[] binaryB, int blocksize) {
         int[] result = new int[Math.max(binaryA.length, binaryB.length)];
